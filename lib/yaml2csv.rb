@@ -14,14 +14,16 @@ module Yaml2csv
   def self.yaml2csv(yamldata, options = {})
     hash = YAML::load(yamldata)
 
-    CSV.generate do |csv_writer|
+    out = ''
+    CSV::Writer.generate out do |csv_writer|
       hash.to_enum(:walk).each do |path, key, value|
         strvalue = value.is_a?(String) ? value : value.inspect
         csv_writer << [path.join("/"), key, strvalue]
       end
     end
+    out
   end
-  
+
   # Convert a string containing CSV values to a YAML string
   def self.csv2yaml(csvdata, options = {})
     walk_array = []
@@ -32,5 +34,5 @@ module Yaml2csv
 
     hash = Hash.unwalk_from_array(walk_array)
     hash.ya2yaml.gsub(/\s+$/, '') + "\n"
-  end  
+  end
 end
